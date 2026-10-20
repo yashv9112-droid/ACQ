@@ -183,7 +183,7 @@ export class QuestManager implements Iterable<Quest> {
 		quest: Quest,
 		retry = 0,
 		captchaHeaders?: Record<string, string>,
-	): Promise<void> {
+	): Promise<any> {
 		if (retry === 3) {
 			console.error(
 				`Failed to redeem quest "${quest.config.messages.quest_name}" after ${retry} attempts.`,
@@ -241,6 +241,7 @@ export class QuestManager implements Iterable<Quest> {
 				`Claimed rewards for quest "${quest.config.messages.quest_name}"!`,
 			);
 			quest.updateUserStatus(res);
+			return res;
 		} catch (err: any) {
 			const rawError = err.rawError as CaptchaDataFromRequest;
 			if (rawError['captcha_key'] && rawError['captcha_sitekey']) {
@@ -265,6 +266,62 @@ export class QuestManager implements Iterable<Quest> {
 				);
 			}
 		}
+	}
+
+	/**
+	 * Completed quests whose reward is Discord Orbs and that haven't been claimed yet.
+	 */
+	filterOrbQuestsToCollect() {
+		return this.list().filter(
+			(quest) =>
+				quest.isCompleted() &&
+				!quest.hasClaimedRewards() &&
+				quest.isOrbQuest(),
+		);
+	}
+
+	/**
+	 * Claim the Orbs reward of a single completed quest.
+	 * @returns the amount of Orbs collected (0 if the claim failed).
+	 */
+	async collectOrbs(quest: Quest): Promise<number> {
+		const questName = quest.config.messages.quest_name;
+		const res = await this.redeemQuest(quest);
+		if (!res) {
+			return 0;
+		}
+		const orbs = res.orb_quantity_claimed ?? quest.getOrbQuantityClaimed();
+		console.log(`Collected ${orbs} Orbs from quest "${questName}"!`);
+		return orbs;
+	}
+
+	/**
+	 * Claim Orbs rewards from every completed orb quest.
+	 * @returns the total amount of Orbs collected.
+	 */
+	async collectAllOrbs(): Promise<number> {
+		const orbQuests = this.filterOrbQuestsToCollect();
+		if (orbQuests.length === 0) {
+			console.log('No Orbs rewards to collect.');
+			return 0;
+		}
+		console.log(
+			`Collecting Orbs from ${orbQuests.length} completed quest(s)...`,
+		);
+		let total = 0;
+		for (const quest of orbQuests) {
+			try {
+				const orbs = await this.collectOrbs(quest);
+				total += orbs;
+			} catch (err: any) {
+				console.error(
+					`Failed to collect Orbs from quest "${quest.config.messages.quest_name}".`,
+					err?.message ?? err,
+				);
+			}
+		}
+		console.log(`Collected ${total} Orbs in total.`);
+		return total;
 	}
 
 	async doingQuest(quest: Quest) {

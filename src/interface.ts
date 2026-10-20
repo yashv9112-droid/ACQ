@@ -168,6 +168,10 @@ export interface QuestUserStatus {
 	 */
 	claimed_tier?: number | null;
 	/**
+	 * The amount of Discord Orbs claimed
+	 */
+	orb_quantity_claimed?: number | null;
+	/**
 	 * When the last heartbeat was received
 	 */
 	last_stream_heartbeat_at?: string | null;
@@ -417,9 +421,21 @@ export interface QuestReward {
 	 */
 	orb_quantity?: number;
 	/**
+	 * The amount of Discord Orbs awarded to premium users
+	 */
+	premium_orb_quantity?: number;
+	/**
 	 * The days of fractional premium awarded
 	 */
 	quantity?: number;
+}
+
+export enum QuestRewardType {
+	REWARD_CODE = 1,
+	IN_GAME = 2,
+	COLLECTIBLE = 3,
+	VIRTUAL_CURRENCY = 4,
+	FRACTIONAL_PREMIUM = 5,
 }
 
 export interface QuestRewardMessages {

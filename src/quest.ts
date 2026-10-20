@@ -1,6 +1,8 @@
 import type {
 	Quest as QuestShape,
+	QuestReward,
 } from './interface';
+import { QuestRewardType } from './interface';
 
 export class Quest {
 	private readonly data: QuestShape;
@@ -51,6 +53,27 @@ export class Quest {
 
 	hasClaimedRewards(): boolean {
 		return Boolean(this.userStatus?.claimed_at);
+	}
+
+	getOrbReward(): QuestReward | undefined {
+		return this.data.config.rewards_config?.rewards?.find(
+			(reward) => reward.type === QuestRewardType.VIRTUAL_CURRENCY,
+		);
+	}
+
+	isOrbQuest(): boolean {
+		return this.getOrbReward() != null;
+	}
+
+	getOrbQuantity(): number {
+		const reward = this.getOrbReward();
+		return reward?.orb_quantity ?? reward?.premium_orb_quantity ?? 0;
+	}
+
+	getOrbQuantityClaimed(): number {
+		return (
+			this.userStatus?.orb_quantity_claimed ?? this.getOrbQuantity()
+		);
 	}
 
     updateUserStatus(userStatus: QuestShape["user_status"]) {

@@ -134,4 +134,9 @@ export class ClientQuest extends Client {
 			`[Quest Completed!](https://discord.com/quests/${questId})`,
 		);
 	}
+	emitOrbsCollected(totalOrbs: number) {
+		return this.sendWebhookMessage(
+			`Collected **${totalOrbs} Orbs** from completed quests!`,
+		);
+	}
 }

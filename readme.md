@@ -33,6 +33,7 @@ This project provides a minimal selfbot framework built on top of discord.js cor
   * `WATCH_VIDEO_ON_MOBILE`
   * `ACHIEVEMENT_IN_ACTIVITY`
 
+* Automatically **collects Orbs** after completing quests (quests whose reward is Discord Orbs are claimed automatically). Set `COLLECT_ORBS=false` in `.env` to disable.
 * ~~Automatically **redeems rewards** for completed quests.~~ nope 😭
 * Unsupported for now (due to no valid samples at time of development):
 
@@ -136,6 +137,10 @@ Quest "Download Comet Browser" completed!
 Quest "New Season Ahsarah" completed!
 Quest "Where Winds Meet Launch" completed!
 Quest "Alloyed Collective Gupdoption" completed!
+Collecting Orbs from 3 completed quest(s)...
+Collected 300 Orbs from quest "Mobile Orbs Intro"!
+Collected 150 Orbs from quest "Amazon"!
+Collected 450 Orbs in total.
 ```
 
 ## 🙏 Credits

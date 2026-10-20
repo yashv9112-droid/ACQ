@@ -35,6 +35,15 @@ client.once(GatewayDispatchEvents.Ready, async ({ data, api }) => {
 		questsValid.map((quest) => client.questManager!.doingQuest(quest)),
 	);
 
+	// ! Collect Orbs from completed quests
+	if (process.env.COLLECT_ORBS !== 'false') {
+		await client.fetchQuests(false);
+		const totalOrbs = await client.questManager!.collectAllOrbs();
+		if (totalOrbs > 0) {
+			await client.emitOrbsCollected(totalOrbs);
+		}
+	}
+
 	// ! Redeem rewards for completed quests
 	// Todo: Cache quests
 	/*
